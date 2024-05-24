@@ -4,6 +4,11 @@ How to run
 
 ``` bash setup.sh ```
 
+1. This will spin up the containers, the tests containers will run just once we have a health check on the api.
+2. After the file stops receiving logs from the 3 tests containers its ready for termination
+3. Finally a docker-compose down is called
+
+
 In this solution there are 2 Dockerfiles
 
 The dockerfile on the root expand on the fastapi and install curl on it.
