@@ -1,0 +1,56 @@
+version: '3'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    healthcheck:
+      test: curl --fail http://localhost:8000/status || exit 1
+      interval: 1s
+      timeout: 2s
+      retries: 3
+
+  authn_tests:
+    build:
+      context: ./exam_docker
+      dockerfile: Dockerfile
+    command: python3 app/tests/test_authentication.py
+    environment:
+      API_ADDRESS: api:8000
+      LOG: 1
+    volumes:
+      - ./exam_docker/logs:/app/logs
+    depends_on:
+      api:
+        condition: service_healthy
+
+  authz_tests:
+    build:
+      context: ./exam_docker
+      dockerfile: Dockerfile
+    command: python3 app/tests/test_authorization.py
+    environment:
+      API_ADDRESS: api:8000
+      LOG: 1
+    volumes:
+      - ./exam_docker/logs:/app/logs
+    depends_on:
+      api:
+        condition: service_healthy
+
+  content_tests:
+    build:
+      context: ./exam_docker
+      dockerfile: Dockerfile
+    command: python3 app/tests/test_content.py
+    environment:
+      API_ADDRESS: api:8000
+      LOG: 1
+    volumes:
+      - ./exam_docker/logs:/app/logs
+    depends_on:
+      api:
+        condition: service_healthy
+    
